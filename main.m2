@@ -31,7 +31,8 @@ checkEquivalence = {n,edg1,edg2,b1,b2} -> {
 		return false;
 	};
 
-	R = QQ[l_(1,1)..l_(n,n),m_(1,1)..m_(n,n)];
+	-- frac allows inverse in cyclic case
+	R = frac(QQ[l_(1,1)..l_(n,n),m_(1,1)..m_(n,n)]);
 
     -- adjacency matrix for bidiricted parts
     Bad1 =  mutableIdentity(R,n);
@@ -58,28 +59,35 @@ checkEquivalence = {n,edg1,edg2,b1,b2} -> {
     
     L1 = matrix(L1);
     L2 = matrix(L2);
-    
+
 	-- A1 matrix for checking G in G_tilde
     -- A2 matrix for checking G_tilde in G
     A1 = (transpose L2)*transpose(inverse(L1));
     A2 = (transpose L1)*transpose(inverse(L2));
     
 	-- Randomization
-    S1 = QQ[l_(1,1)..l_(n,n),m_(1,1)..m_(n,n)];
+    S1 = frac(QQ[l_(1,1)..l_(n,n),m_(1,1)..m_(n,n),tt1]);
     A1 = substitute(A1,S1);
     for i from 1 to n do(
 	for j from 1 to n do(
 	    A1 = substitute(A1, l_(i,j) => randomrat(1000000));
 	    );	
 	);
+	Q1 = QQ[l_(1,1)..l_(n,n),m_(1,1)..m_(n,n),tt1];
+	L2 = substitute(L2,Q1);
+	A1 = substitute(A1,Q1);
 
-    S2 = QQ[m_(1,1)..m_(n,n),l_(1,1)..l_(n,n)];  
+
+    S2 = frac(QQ[m_(1,1)..m_(n,n),l_(1,1)..l_(n,n),tt2]);  
     A2 = substitute(A2, S2);
     for i from 1 to n do(
 	for j from 1 to n do(
 	    A2 = substitute(A2, m_(i,j) => randomrat(1000000));
 	    );	
 	);
+	Q2 = QQ[l_(1,1)..l_(n,n),m_(1,1)..m_(n,n),tt2];
+	L1 = substitute(L1,Q2);
+	A2 = substitute(A2,Q2);
     
 	-- A1 should be solved for m, with l substituded with random rationals, corresponding to checking M(G) in M(G_tilde)
 	-- A2 should be solved for l, with m substituded with random rationals, corresponding to checking M(G_tilde) in M(G)
@@ -111,6 +119,10 @@ checkEquivalence = {n,edg1,edg2,b1,b2} -> {
 		);
 	    );
 	);
+
+    -- for cyclic graphs
+	eqlist1##eqlist1 = tt1*det(L2)-1;
+	eqlist2##eqlist2 = tt2*det(L1)-1;
 
 	-- eqlist 1 gives the system of equations to be solved for checking M(G) in M(G_tilde)
 	-- eqlist 2 gives the system of equations to be solved for checking M(G_tilde) in M(G)

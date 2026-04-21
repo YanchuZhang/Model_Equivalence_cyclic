@@ -13,6 +13,18 @@ findEqGraphs = {n,edg1,b1} -> {
     return(eqclass);
     };
 
+--search equivalent (cyclic) graph by exhaustive search
+findEqGraphsCyc = {n,edg1,b1} -> {
+    eqclass = {};
+	dlist = digraphList(n);
+	blist = bidlist(n,#b1);
+    for edg2 in dlist do(
+    	for b2 in blist do (
+	    if checkEquivalence(n,edg1,edg2,b1,b2) then eqclass=append(eqclass,{edg2,b2});
+	    );
+    	);
+    return(eqclass);
+    };
 
 -- progressive output
 findEqGraphsProg = {n,edg1,b1} -> {

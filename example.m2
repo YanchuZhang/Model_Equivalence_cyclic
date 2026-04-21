@@ -27,3 +27,13 @@ eqclass = findEqGraphs(n,edg1,b1);
 for e in eqclass do(
      print(e);
      );
+
+-- Equivalence class of the following DMG (also cyclic)
+n = 3;
+edg1 = {(1,2),(2,3)};
+b1 = {(2,3)};
+eqclass = findEqGraphsCyc(n,edg1,b1);
+
+for e in eqclass do(
+     print(e);
+     );

@@ -39,32 +39,31 @@ randomrat = {M} -> {
 
 ---------------------------------------------------------------
 
-daglist = {n} -> {
-    
+daglist = n -> (
     -- Input: n: number of nodes
-    -- Output: list of all dags with n nodes
-    -- Usage: Generate all the dags with n nodes
+    -- Output: list of all DAGs with n nodes
 
-    orders = permutations toList (1..n);
-    dlist = {{}};
-    for o in orders do(
-    edgelist = {};
-    for i from 0 to n-2 do (
-    for j from i+1 to n-1 do(
-    edgelist = append(edgelist,(o_i,o_j));
+    orders = permutations toList(1..n);
+    dlist = {};
+
+    for o in orders do (
+        edgelist = {};
+
+        -- all forward edges w.r.t. this order
+        for i from 0 to n-2 do (
+            for j from i+1 to n-1 do (
+                edgelist = append(edgelist, (o#i, o#j));
+            );
+        );
+
+        -- take all subsets of allowed edges
+        for s in subsets edgelist do (
+            dlist = append(dlist, sort s);
+        );
     );
-    );
-    edgeperm = permutations edgelist;
-    for el in edgeperm do(
-    for e from 1 to binomial(n,2) do(
-    -- in a dag with n nodes, there can be at most binomial(n,2) edges
-    dlist = append(dlist, sort el_{0..e-1});
-    );
-    );
-    dlist = unique dlist;
-    );
-    return(dlist);
-    };
+
+    unique dlist
+);
 
 ----------------------------------------------------------------
 
@@ -142,3 +141,29 @@ ranbid = {n,bnum} -> {
     };
 
 ----------------------------------------------------------------
+
+digraphList = n -> (
+    -- Input: n: number of nodes
+    -- Output: list of all directed graphs (no self-loops)
+
+    nodes = toList(1..n);
+    edgelist = {};
+
+    -- all possible directed edges except self-loops
+    for i in nodes do (
+        for j in nodes do (
+            if i != j then (
+                edgelist = append(edgelist, (i, j));
+            );
+        );
+    );
+
+    dlist = {};
+
+    -- all subsets = all digraphs
+    for s in subsets edgelist do (
+        dlist = append(dlist, sort s);
+    );
+
+    dlist
+);
