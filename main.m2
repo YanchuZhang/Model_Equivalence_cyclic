@@ -78,7 +78,7 @@ checkEquivalence = {n,edg1,edg2,b1,b2} -> {
 	A1 = substitute(A1,Q1);
 
 
-    S2 = frac(QQ[m_(1,1)..m_(n,n),l_(1,1)..l_(n,n),tt2]);  
+    S2 = frac(QQ[m_(1,1)..m_(n,n),l_(1,1)..l_(n,n),tt2]);
     A2 = substitute(A2, S2);
     for i from 1 to n do(
 	for j from 1 to n do(
@@ -121,8 +121,8 @@ checkEquivalence = {n,edg1,edg2,b1,b2} -> {
 	);
 
     -- for cyclic graphs
-	eqlist1##eqlist1 = tt1*det(L2)-1;
-	eqlist2##eqlist2 = tt2*det(L1)-1;
+	-- eqlist1##eqlist1 = tt1*det(L2)-1;
+	-- eqlist2##eqlist2 = tt2*det(L1)-1;
 
 	-- eqlist 1 gives the system of equations to be solved for checking M(G) in M(G_tilde)
 	-- eqlist 2 gives the system of equations to be solved for checking M(G_tilde) in M(G)
