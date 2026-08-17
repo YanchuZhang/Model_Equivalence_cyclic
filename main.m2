@@ -3,45 +3,45 @@ needsPackage ("Graphs");
 
 checkEquivalence = {n,edg1,edg2,b1,b2} -> {
 
-	-- Input: n: number of nodes
-	--      : edg1: directed edges of graph 1 (or G)
-	--      : edg2: directed edges of graph 2 (or G_tilde)
-	--      : b1: bidirected edges of graph 1 
-	--      : b2: bidirected edges of graph 2
-	-- Output: True if equivalent, False otherwise 
-	-- Usage: Check model equivalence of two ADMGs
+    -- Input: n: number of nodes
+    --      : edg1: directed edges of graph 1 (or G)
+    --      : edg2: directed edges of graph 2 (or G_tilde)
+    --      : b1: bidirected edges of graph 1 
+    --      : b2: bidirected edges of graph 2
+    -- Output: True if equivalent, False otherwise 
+    -- Usage: Check model equivalence of two ADMGs
 
-	-- reject if the numbers of bidirected edges are different
-	if (#b1 != #b2) then {
-		return false;
-	};
+    -- reject if the numbers of bidirected edges are different
+    if (#b1 != #b2) then {
+        return false;
+    };
 
-	-- decrease the indices
-	edg1 = decreasePairs(edg1); 
-	edg2 = decreasePairs(edg2);
-	b1 = decreasePairs(b1);
-	b2 = decreasePairs(b2);
+    -- decrease the indices
+    edg1 = decreasePairs(edg1); 
+    edg2 = decreasePairs(edg2);
+    b1 = decreasePairs(b1);
+    b2 = decreasePairs(b2);
 
-	-- reject if the size of the largest connected components of the bidirected parts are different
-	Components1 = connectedComponents(graph(b1));
-	Components2 = connectedComponents(graph(b2));
-	maxCom1 = max apply(Components1, x -> #x);
-	maxCom2 = max apply(Components2, x -> #x);
-	if (maxCom1 != maxCom2) then {
-		return false;
-	};
+    -- reject if the size of the largest connected components of the bidirected parts are different
+    Components1 = connectedComponents(graph(b1));
+    Components2 = connectedComponents(graph(b2));
+    maxCom1 = max apply(Components1, x -> #x);
+    maxCom2 = max apply(Components2, x -> #x);
+    if (maxCom1 != maxCom2) then {
+            return false;
+    };
 
-	-- frac allows inverse in cyclic case
-	R = frac(QQ[l_(1,1)..l_(n,n),m_(1,1)..m_(n,n)]);
+    -- frac allows inverse in cyclic case
+    R = frac(QQ[l_(1,1)..l_(n,n),m_(1,1)..m_(n,n)]);
 
     -- adjacency matrix for bidiricted parts
     Bad1 =  mutableIdentity(R,n);
     for e in b1 do(
-		Bad1_e = Bad1_(e_1,e_0) = 1; -- symmetry
+	    Bad1_e = Bad1_(e_1,e_0) = 1; -- symmetry
 	);
     Bad2 =  mutableIdentity(R,n);
     for e in b2 do(
-		Bad2_e = Bad2_(e_1,e_0) = 1;
+	    Bad2_e = Bad2_(e_1,e_0) = 1;
 	);
 
     -- adjacency matrix of the directed part of G
@@ -50,7 +50,8 @@ checkEquivalence = {n,edg1,edg2,b1,b2} -> {
 		te = (e_0+1,e_1+1);
 		L1_e = -l_te;      
 	);
-     -- adjacency matrix of the directed part of G_tilde
+    
+    -- adjacency matrix of the directed part of G_tilde
     L2 = mutableIdentity(R,n);
     for e in edg2 do (
 		te = (e_0+1,e_1+1);
@@ -60,12 +61,12 @@ checkEquivalence = {n,edg1,edg2,b1,b2} -> {
     L1 = matrix(L1);
     L2 = matrix(L2);
 
-	-- A1 matrix for checking G in G_tilde
+    -- A1 matrix for checking G in G_tilde
     -- A2 matrix for checking G_tilde in G
     A1 = (transpose L2)*transpose(inverse(L1));
     A2 = (transpose L1)*transpose(inverse(L2));
     
-	-- Randomization
+    -- Randomization
     S1 = frac(QQ[l_(1,1)..l_(n,n),m_(1,1)..m_(n,n),tt1]);
     A1 = substitute(A1,S1);
     for i from 1 to n do(
@@ -73,10 +74,9 @@ checkEquivalence = {n,edg1,edg2,b1,b2} -> {
 	    A1 = substitute(A1, l_(i,j) => randomrat(1000000));
 	    );	
 	);
-	Q1 = QQ[l_(1,1)..l_(n,n),m_(1,1)..m_(n,n),tt1];
-	L2 = substitute(L2,Q1);
-	A1 = substitute(A1,Q1);
-
+    Q1 = QQ[l_(1,1)..l_(n,n),m_(1,1)..m_(n,n),tt1];
+    L2 = substitute(L2,Q1);
+    A1 = substitute(A1,Q1);
 
     S2 = frac(QQ[m_(1,1)..m_(n,n),l_(1,1)..l_(n,n),tt2]);
     A2 = substitute(A2, S2);
@@ -85,19 +85,19 @@ checkEquivalence = {n,edg1,edg2,b1,b2} -> {
 	    A2 = substitute(A2, m_(i,j) => randomrat(1000000));
 	    );	
 	);
-	Q2 = QQ[l_(1,1)..l_(n,n),m_(1,1)..m_(n,n),tt2];
-	L1 = substitute(L1,Q2);
-	A2 = substitute(A2,Q2);
+    Q2 = QQ[l_(1,1)..l_(n,n),m_(1,1)..m_(n,n),tt2];
+    L1 = substitute(L1,Q2);
+    A2 = substitute(A2,Q2);
     
-	-- A1 should be solved for m, with l substituded with random rationals, corresponding to checking M(G) in M(G_tilde)
-	-- A2 should be solved for l, with m substituded with random rationals, corresponding to checking M(G_tilde) in M(G)
+    -- A1 should be solved for m, with l substituded with random rationals, corresponding to checking M(G) in M(G_tilde)
+    -- A2 should be solved for l, with m substituded with random rationals, corresponding to checking M(G_tilde) in M(G)
     
-	eqlist1 = new MutableList;
+    eqlist1 = new MutableList;
     eqlist2 = new MutableList;
 
     for i from 0 to n-1 do(
 	for j from 0 to i do(
-		-- consider the lower triangular part and the diagonal
+	    -- consider the lower triangular part and the diagonal
 	    if Bad2_(i,j) != 1 then (
 		for k1 from 0 to n-1 do(
 		for k2 from 0 to n-1 do(
@@ -121,18 +121,18 @@ checkEquivalence = {n,edg1,edg2,b1,b2} -> {
 	);
 
     -- for cyclic graphs
-	-- eqlist1##eqlist1 = tt1*det(L2)-1;
-	-- eqlist2##eqlist2 = tt2*det(L1)-1;
+    eqlist1##eqlist1 = tt1*det(L2)-1;
+    eqlist2##eqlist2 = tt2*det(L1)-1;
 
-	-- eqlist 1 gives the system of equations to be solved for checking M(G) in M(G_tilde)
-	-- eqlist 2 gives the system of equations to be solved for checking M(G_tilde) in M(G)
+    -- eqlist 1 gives the system of equations to be solved for checking M(G) in M(G_tilde)
+    -- eqlist 2 gives the system of equations to be solved for checking M(G_tilde) in M(G)
     	    	    	    
     I1 = ideal(toList eqlist1);
-	I2 = ideal(toList eqlist2);
+    I2 = ideal(toList eqlist2);
 
     if (dim I1 != -1 and dim I2 != -1 ) then {
-		-- dim of ideal != -1 means there is a solution
-		return true;
+            -- dim of ideal != -1 means there is a solution
+            return true;
 	};
 	return false;
 }
